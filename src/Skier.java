@@ -10,12 +10,14 @@ public class Skier {
     public static boolean down;
     public static boolean left;
     public static boolean right;
+    // above gives the skiers variables
 
     public Skier(int startX, int startY){
         x = startX;
         y = startY;
         width = 80;
         height = 80;
+        // starting location of skier
     }
 
     public void move(){
@@ -24,6 +26,6 @@ public class Skier {
         if(down) {y += 5;}
         if(left) {x -= 5;}
         if(right) {x += 5;}
-
+// above details the rate of change the skier can progress at
     }
 }

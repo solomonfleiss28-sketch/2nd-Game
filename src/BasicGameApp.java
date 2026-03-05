@@ -14,27 +14,34 @@ public class BasicGameApp implements Runnable, KeyListener, MouseListener {
     final int WIDTH = 1400;
     final int HEIGHT = 1200;
 
+   // defining the variables
     Skier skier;
     Image skierImage;
     Image backgroundImage;
-
-    Gate[] gates = new Gate[10];
-
+    boolean gameStarted = false;
     boolean gameOver = false;
+
+    int score = 0;
+    int health = 100;
+
+// array with ten gates provided
+    Gate[] gates = new Gate[20];
+
 
     // CONSTRUCTOR
     public BasicGameApp() {
 
         setUpGraphics();
-
+// building the skier then loading the background immage
         skier = new Skier(650, 800);
         skierImage = getImage("skier.png");
         backgroundImage = getImage("background.jpg");
 
+      // builds the gates and there polls
         int startY = -200;
         for (int i = 0; i < gates.length; i++) {
             int leftPole = 200 + (int)(Math.random() * 800);
-            int rightPole = leftPole + 200;
+            int rightPole = leftPole + 300;
             gates[i] = new Gate(leftPole, rightPole, startY);
             startY -= 180;
         }
@@ -42,22 +49,54 @@ public class BasicGameApp implements Runnable, KeyListener, MouseListener {
 
     public void moveThings() {
 
-        if (gameOver) return;
+        // doesn't do anything if the game hasn't started
+        if (gameStarted == false) {
+            return;
+        }
+//doesn't do anythign if the game is over
+        if (gameOver == true) {
+            return;
+        }
 
+        // moves the skier
         skier.move();
 
-        for (int i = 0; i < gates.length; i++) {
-            gates[i].scroll(5);
-            if (gates[i].passed) {
-                if (gates[i].y > skier.y + skier.height) {
-                    if (skier.x > gates[i].leftX + 20 && skier.x + skier.width < gates[i].rightX) {
 
-                        gates[i].passed = true;
-                        System.out.println("Gate Passed!");
+        // makes the loop through every gate
+        for (int i = 0; i < gates.length; i++) {
+
+            // move gate down the hill
+            gates[i].scroll(2);
+
+            if (gates[i].passed == false) {
+
+                // check if the skeir is above the gate
+                if (gates[i].y > skier.y + skier.height) {
+
+                    // check if skier is between gate poles
+                    if (skier.x > gates[i].leftX + 20) {
+
+                        if (skier.x + skier.width < gates[i].rightX) {
+
+                           //if skier sucseeds
+                            gates[i].passed = true;
+                            score = score + 10;
+
+                        } else {
+                            // if missed right then -25 health
+                            gates[i].passed = true;
+                            health = health - 25;
+                        }
 
                     } else {
+                        // if missed left then -25 health
+                        gates[i].passed = true;
+                        health = health - 25;
+                    }
+
+                    // after check total health
+                    if (health <= 0) {
                         gameOver = true;
-                        System.out.println("DSQ!");
                     }
                 }
             }
@@ -68,6 +107,19 @@ public class BasicGameApp implements Runnable, KeyListener, MouseListener {
 
         Graphics2D g = (Graphics2D) bufferStrategy.getDrawGraphics();
 
+        // defines the click to start button.
+        if (gameStarted== false) {
+            g.setColor(Color.RED);
+            g.fillRect(0, 0, WIDTH, HEIGHT);
+            g.setColor(Color.WHITE);
+            g.setFont(new Font("Arial", Font.BOLD, 60));
+            g.drawString("Ski Racing Game", 500, 400);
+            g.drawString("Click to Start", 500, 500);
+            g.dispose();
+            bufferStrategy.show();
+            return;
+        }
+        // loads background immage into the game
         g.clearRect(0, 0, WIDTH, HEIGHT);
         g.drawImage(backgroundImage, 0, 0, WIDTH, HEIGHT, null);
 
@@ -79,12 +131,23 @@ public class BasicGameApp implements Runnable, KeyListener, MouseListener {
         // draw skier
         g.drawImage(skierImage, skier.x, skier.y, skier.width, skier.height, null);
 
-        if (gameOver) {
-            g.setColor(Color.RED);
-            g.setFont(new Font("Arial", Font.BOLD, 80));
-            g.drawString("DSQ'ed!", 400, 500);
-        }
+       // health bar below
+        g.setColor(Color.BLACK);
+        g.setFont(new Font("Arial", Font.BOLD, 30));
+        g.drawString("Score: " + score, 50, 50);
+        g.drawRect(50, 80, 200, 30);
+        g.setColor(Color.RED);
+        g.fillRect(50, 80, health * 2, 30);
 
+        //signal message to user if the game is complete
+        if (gameOver) {
+            g.setColor(Color.BLACK);
+            g.fillRect(0, 0, WIDTH, HEIGHT);
+            g.setColor(Color.RED);
+            g.setFont(new Font("Arial", Font.BOLD, 60));
+            g.drawString("GAME OVER", 500, 400);
+            g.drawString("Score: " + score, 500, 500);
+        }
         g.dispose();
         bufferStrategy.show();
     }
@@ -121,32 +184,39 @@ public class BasicGameApp implements Runnable, KeyListener, MouseListener {
 
     private void setUpGraphics() {
 
-        frame = new JFrame("Ski Game");
+        frame = new JFrame("Coolest Ski Game Ever!!");
 
-        panel = (JPanel) frame.getContentPane();
-        panel.setPreferredSize(new Dimension(WIDTH, HEIGHT));
-        panel.setLayout(null);
+        panel = (JPanel) frame.getContentPane();//sets up a JPanel which is what goes in the frame
+        panel.setPreferredSize(new Dimension(WIDTH, HEIGHT)); //sizes the JPanel
+        panel.setLayout(null); //set the layout
 
+        // creates a canvas which is a blank rectangular area of the screen onto which the application can draw
+        // and trap input events (Mouse and Keyboard events)
         canvas = new Canvas();
         canvas.setBounds(0, 0, WIDTH, HEIGHT);
         canvas.setIgnoreRepaint(true);
         canvas.addKeyListener(this);
+        canvas.addMouseListener(this);
 
-        panel.add(canvas);
 
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.pack();
-        frame.setResizable(false);
-        frame.setVisible(true);
+        panel.add(canvas);// adds the canvas to the panel.
 
+        // frame operations
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);  //makes the frame close and exit nicely
+        frame.pack();  //adjusts the frame and its contents so the sizes are at their default or larger
+        frame.setResizable(false);   //makes it so the frame cannot be resized
+        frame.setVisible(true);      //IMPORTANT!!!  if the frame is not set to visible it will not appear on the screen!
+
+        // sets up things so the screen displays images nicely.
         canvas.createBufferStrategy(2);
         bufferStrategy = canvas.getBufferStrategy();
         canvas.requestFocus();
+        System.out.println("DONE graphic setup");
     }
 
     @Override
     public void keyTyped(KeyEvent e) {}
-
+// not being used
     @Override
     public void keyPressed(KeyEvent e) {
 
@@ -162,7 +232,7 @@ public class BasicGameApp implements Runnable, KeyListener, MouseListener {
     public void keyReleased(KeyEvent e) {
 
         int key = e.getKeyCode();
-
+// allows the arrow keys to control the skier
         if (key == 37) Skier.left = false;
         if (key == 39) Skier.right = false;
         if (key == 38) Skier.up = false;
@@ -170,7 +240,13 @@ public class BasicGameApp implements Runnable, KeyListener, MouseListener {
     }
 
     @Override public void mouseClicked(MouseEvent e) {}
-    @Override public void mousePressed(MouseEvent e) {}
+    // this will be unused
+    @Override public void mousePressed(MouseEvent e) {
+        gameStarted = true;// this action describes that to start the game the mouse must be clicked
+    }
+
+
+    // all mouse events  below will be unused
     @Override public void mouseReleased(MouseEvent e) {}
     @Override public void mouseEntered(MouseEvent e) {}
     @Override public void mouseExited(MouseEvent e) {}
