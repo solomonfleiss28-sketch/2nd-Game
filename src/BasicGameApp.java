@@ -20,6 +20,7 @@ public class BasicGameApp implements Runnable, KeyListener, MouseListener {
     Image backgroundImage;
     boolean gameStarted = false;
     boolean gameOver = false;
+    boolean gameWon = false;
 
     int score = 0;
     int health = 100;
@@ -40,10 +41,10 @@ public class BasicGameApp implements Runnable, KeyListener, MouseListener {
       // builds the gates and there polls
         int startY = -200;
         for (int i = 0; i < gates.length; i++) {
-            int leftPole = 200 + (int)(Math.random() * 800);
+            int leftPole = 300 + (int)(Math.random() * 800);
             int rightPole = leftPole + 300;
             gates[i] = new Gate(leftPole, rightPole, startY);
-            startY -= 180;
+            startY -= 250; // controls the distance between the gates
         }
     }
 
@@ -54,7 +55,7 @@ public class BasicGameApp implements Runnable, KeyListener, MouseListener {
             return;
         }
 //doesn't do anythign if the game is over
-        if (gameOver == true) {
+        if (gameOver == true || gameWon == true) {
             return;
         }
 
@@ -66,7 +67,7 @@ public class BasicGameApp implements Runnable, KeyListener, MouseListener {
         for (int i = 0; i < gates.length; i++) {
 
             // move gate down the hill
-            gates[i].scroll(2);
+            gates[i].moveDown(2);
 
             if (gates[i].passed == false) {
 
@@ -99,6 +100,12 @@ public class BasicGameApp implements Runnable, KeyListener, MouseListener {
                         gameOver = true;
                     }
                 }
+            }
+        }
+        gameWon = true;
+        for (int i = 0; i < gates.length; i++) {
+            if (gates[i].passed == false) {//
+                gameWon = false;
             }
         }
     }
@@ -136,18 +143,28 @@ public class BasicGameApp implements Runnable, KeyListener, MouseListener {
         g.setFont(new Font("Arial", Font.BOLD, 30));
         g.drawString("Score: " + score, 50, 50);
         g.drawRect(50, 80, 200, 30);
-        g.setColor(Color.RED);
+        g.setColor(Color.red);
         g.fillRect(50, 80, health * 2, 30);
 
         //signal message to user if the game is complete
         if (gameOver) {
             g.setColor(Color.BLACK);
             g.fillRect(0, 0, WIDTH, HEIGHT);
-            g.setColor(Color.RED);
+            g.setColor(Color.MAGENTA);
             g.setFont(new Font("Arial", Font.BOLD, 60));
             g.drawString("GAME OVER", 500, 400);
             g.drawString("Score: " + score, 500, 500);
         }
+        if (gameWon) {// If the player wins the game then the message below will print.
+            g.setColor(Color.BLACK);
+            g.fillRect(0, 0, WIDTH, HEIGHT);
+            g.setColor(Color.GREEN);
+            g.setFont(new Font("MonoSpaced", Font.BOLD, 60));
+            g.drawString("YOU WON!!!!", 500, 400);
+            g.drawString("Score: " + score, 500, 500);
+        }
+
+
         g.dispose();
         bufferStrategy.show();
     }

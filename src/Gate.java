@@ -18,7 +18,7 @@ public class Gate {
         // defines gate location based on radom generation
     }
 
-    public void scroll(int speed) {
+    public void moveDown(int speed) {
         y += speed;
         // describes how fast the gates move
     }
@@ -32,8 +32,6 @@ public class Gate {
         g.fillRect(rightX, y, poleWidth, poleHeight);
 
         g.setColor(Color.BLACK);
-        g.drawRect(leftX + poleWidth, y + 30,
-                rightX - (leftX + poleWidth),
-                40);
+        g.drawRect(leftX + poleWidth, y + 30, rightX - (leftX + poleWidth), 40);
     }
 }
