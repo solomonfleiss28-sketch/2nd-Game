@@ -1,3 +1,4 @@
+//Solomon M. Fleiss
 //vvvvvvvvvvvvvvvvvvvvvvvvvvvvvv DON'T CHANGE! vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
 // Graphics Libraries
 import javax.swing.*;
@@ -11,6 +12,7 @@ import java.awt.image.BufferStrategy;
 
 public class BasicGameApp implements Runnable, KeyListener, MouseListener {
 
+    // defines size of the screen
     final int WIDTH = 1400;
     final int HEIGHT = 1200;
 
@@ -22,6 +24,7 @@ public class BasicGameApp implements Runnable, KeyListener, MouseListener {
     boolean gameOver = false;
     boolean gameWon = false;
 
+    //Gives initial score and initial health at start of the game.
     int score = 0;
     int health = 100;
 
@@ -34,21 +37,21 @@ public class BasicGameApp implements Runnable, KeyListener, MouseListener {
 
         setUpGraphics();
 // building the skier then loading the background immage
-        skier = new Skier(650, 800);
-        skierImage = getImage("skier.png");
-        backgroundImage = getImage("background.jpg");
+        skier = new Skier(650, 800);//skier starting position
+        skierImage = getImage("skier.png");// loads skier immage
+        backgroundImage = getImage("background.jpg");// loads background
 
-      // builds the gates and there polls
+      // builds the gates and there polls in random x cordinate
         int startY = -200;
-        for (int i = 0; i < gates.length; i++) {
+        for (int i = 0; i < gates.length; i++) {//defines random place
             int leftPole = 300 + (int)(Math.random() * 800);
-            int rightPole = leftPole + 300;
-            gates[i] = new Gate(leftPole, rightPole, startY);
+            int rightPole = leftPole + 300;// distance between polls
+            gates[i] = new Gate(leftPole, rightPole, startY);// bulds them together and places them on the ski slope
             startY -= 250; // controls the distance between the gates
         }
     }
 
-    public void moveThings() {
+    public void moveThings() {// moves things
 
         // doesn't do anything if the game hasn't started
         if (gameStarted == false) {
@@ -67,26 +70,26 @@ public class BasicGameApp implements Runnable, KeyListener, MouseListener {
         for (int i = 0; i < gates.length; i++) {
 
             // move gate down the hill
-            gates[i].moveDown(2);
+            gates[i].moveDown(2);//speed gates move
 
-            if (gates[i].passed == false) {
+            if (gates[i].passed == false) {//figure out if skier passes gate
 
                 // check if the skeir is above the gate
-                if (gates[i].y > skier.y + skier.height) {
+                if (gates[i].y > skier.y + skier.height) {//checks if skier passes y gate
 
                     // check if skier is between gate poles
-                    if (skier.x > gates[i].leftX + 20) {
+                    if (skier.x > gates[i].leftX + 20) { // checks if skier passes x gate
 
-                        if (skier.x + skier.width < gates[i].rightX) {
+                        if (skier.x + skier.width < gates[i].rightX) {//if passed is true defines what happens
 
                            //if skier sucseeds
                             gates[i].passed = true;
-                            score = score + 10;
+                            score = score + 10;//if passes aditionanl ten points
 
                         } else {
                             // if missed right then -25 health
                             gates[i].passed = true;
-                            health = health - 25;
+                            health = health - 20;// health deducion for losing gates
                         }
 
                     } else {
@@ -96,15 +99,15 @@ public class BasicGameApp implements Runnable, KeyListener, MouseListener {
                     }
 
                     // after check total health
-                    if (health <= 0) {
+                    if (health <= 0) {// total check immedialty that health is not zero otherwise you would lose.
                         gameOver = true;
                     }
                 }
             }
         }
-        gameWon = true;
-        for (int i = 0; i < gates.length; i++) {
-            if (gates[i].passed == false) {//
+        gameWon = true;// defines how the game is won
+        for (int i = 0; i < gates.length; i++) {// finding if past the gates
+            if (gates[i].passed == false) {//if all the gates are passed then you have won.
                 gameWon = false;
             }
         }
@@ -120,15 +123,19 @@ public class BasicGameApp implements Runnable, KeyListener, MouseListener {
             g.fillRect(0, 0, WIDTH, HEIGHT);
             g.setColor(Color.WHITE);
             g.setFont(new Font("Arial", Font.BOLD, 60));
-            g.drawString("Ski Racing Game", 500, 400);
-            g.drawString("Click to Start", 500, 500);
+            g.drawString("Ski Racing Game", 500, 400);//text printed
+            g.drawString("Click to Start", 500, 500);//text printed
+            g.setColor(Color.WHITE);
+            g.setFont(new Font("Arial", Font.BOLD, 40));
+            g.drawString("Don't Hit the gates!! & use all 4 Arrow Keys!!!", 300, 600);//text printed
+
             g.dispose();
             bufferStrategy.show();
             return;
         }
         // loads background immage into the game
-        g.clearRect(0, 0, WIDTH, HEIGHT);
-        g.drawImage(backgroundImage, 0, 0, WIDTH, HEIGHT, null);
+        g.clearRect(0, 0, WIDTH, HEIGHT);//draws background into game
+        g.drawImage(backgroundImage, 0, 0, WIDTH, HEIGHT, null);//inputs background first
 
         // draw gates
         for (int i = 0; i < gates.length; i++) {
@@ -139,14 +146,14 @@ public class BasicGameApp implements Runnable, KeyListener, MouseListener {
         g.drawImage(skierImage, skier.x, skier.y, skier.width, skier.height, null);
 
        // health bar below
-        g.setColor(Color.BLACK);
-        g.setFont(new Font("Arial", Font.BOLD, 30));
-        g.drawString("Score: " + score, 50, 50);
+        g.setColor(Color.BLACK);//color
+        g.setFont(new Font("Arial", Font.BOLD, 30));//font
+        g.drawString("Score: " + score, 50, 50);// all below is size
         g.drawRect(50, 80, 200, 30);
         g.setColor(Color.red);
-        g.fillRect(50, 80, health * 2, 30);
+        g.fillRect(50, 80, health * 2, 30);//takes health out of bar when health lost
 
-        //signal message to user if the game is complete
+        //tells player that the game is complete and their final score
         if (gameOver) {
             g.setColor(Color.BLACK);
             g.fillRect(0, 0, WIDTH, HEIGHT);
@@ -155,7 +162,7 @@ public class BasicGameApp implements Runnable, KeyListener, MouseListener {
             g.drawString("GAME OVER", 500, 400);
             g.drawString("Score: " + score, 500, 500);
         }
-        if (gameWon) {// If the player wins the game then the message below will print.
+        if (gameWon) {// If the Player wins the game the following message will print along with their final score
             g.setColor(Color.BLACK);
             g.fillRect(0, 0, WIDTH, HEIGHT);
             g.setColor(Color.GREEN);
@@ -235,10 +242,10 @@ public class BasicGameApp implements Runnable, KeyListener, MouseListener {
     public void keyTyped(KeyEvent e) {}
 // not being used
     @Override
-    public void keyPressed(KeyEvent e) {
+    public void keyPressed(KeyEvent e) {//uses Key Press to allow the skier to move around the gates
 
         int key = e.getKeyCode();
-
+// this code utilizes the arrow keys
         if (key == 37) Skier.left = true;
         if (key == 39) Skier.right = true;
         if (key == 38) Skier.up = true;
@@ -247,7 +254,7 @@ public class BasicGameApp implements Runnable, KeyListener, MouseListener {
 
     @Override
     public void keyReleased(KeyEvent e) {
-
+// is the opposite says that once the key is released  the pressed action is now invalid.
         int key = e.getKeyCode();
 // allows the arrow keys to control the skier
         if (key == 37) Skier.left = false;
