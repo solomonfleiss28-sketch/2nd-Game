@@ -46,7 +46,7 @@ public class BasicGameApp implements Runnable, KeyListener, MouseListener {
         for (int i = 0; i < gates.length; i++) {//defines random place
             int leftPole = 300 + (int)(Math.random() * 800);
             int rightPole = leftPole + 300;// distance between polls
-            gates[i] = new Gate(leftPole, rightPole, startY);// bulds them together and places them on the ski slope
+            gates[i] = new Gate(leftPole, rightPole, startY);// builds them together and places them on the ski slope
             startY -= 300; // controls the distance between the gates
         }
     }
