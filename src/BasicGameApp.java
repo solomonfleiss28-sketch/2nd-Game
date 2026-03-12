@@ -47,7 +47,7 @@ public class BasicGameApp implements Runnable, KeyListener, MouseListener {
             int leftPole = 300 + (int)(Math.random() * 800);
             int rightPole = leftPole + 300;// distance between polls
             gates[i] = new Gate(leftPole, rightPole, startY);// bulds them together and places them on the ski slope
-            startY -= 250; // controls the distance between the gates
+            startY -= 300; // controls the distance between the gates
         }
     }
 
@@ -87,7 +87,7 @@ public class BasicGameApp implements Runnable, KeyListener, MouseListener {
                             score = score + 10;//if passes aditionanl ten points
 
                         } else {
-                            // if missed right then -25 health
+                            // if missed right then -20 health
                             gates[i].passed = true;
                             health = health - 20;// health deducion for losing gates
                         }
